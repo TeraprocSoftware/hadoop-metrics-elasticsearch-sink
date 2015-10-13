@@ -1,0 +1,29 @@
+def env = project.hasProperty('env') ? project.getProperty('env') : 'local'
+
+apply plugin: 'java'
+apply plugin: 'maven'
+apply plugin: 'idea'
+
+sourceCompatibility = 1.5
+version = '1.0'
+group = 'com.teraproc'
+
+jar { baseName = 'hadoop-metrics-elasticsearch-sink' }
+
+repositories {
+    mavenCentral()
+    maven { url "http://mvnrepository.com/" }
+}
+
+configurations {
+    compile
+}
+
+dependencies {
+    compile("org.apache.hadoop:hadoop-common:2.7.1")
+    compile("org.apache.httpcomponents:httpclient:4.3.5")
+    compile("org.apache.commons:commons-lang3:3.3.2")
+    compile("commons-logging:commons-logging:1.2")
+    compile("org.apache.hadoop:hadoop-core:1.2.1")
+    testCompile("junit:junit:4.11")
+}
