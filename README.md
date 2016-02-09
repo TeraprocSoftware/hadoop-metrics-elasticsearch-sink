@@ -1,6 +1,6 @@
 # About the Hadoop Metrics Elasticsearch Sink Plugin #
 
-hadoop-metrics-elasticsearch-sink is an implementation of Hadoop Metrics2 plugin to push metrics to Elasticsearch (a distributed RESTful search engine).
+**`hadoop-metrics-elasticsearch-sink`** is an implementation of Hadoop Metrics2 plugin to push metrics to Elasticsearch (a distributed RESTful search engine).
 The sink is capable of collecting metrics of hadoop applications that support Hadoop Metrics2 (e.g. hbase, kafka, etc.).
 The plugin jar must be deployed on all Hadoop YARN Nodemanagers with the **SAME** path (e.g., `/opt/hadoop/share/hadoop/yarn/lib/hadoop-metrics-elasticsearch-sink-1.0.jar`).
 
@@ -18,7 +18,7 @@ To prepare the Slider application package for HBase that uses this plugin, follo
 wget https://archive.apache.org/dist/hbase/0.98.17/hbase-0.98.17-hadoop2-bin.tar.gz
 mv hbase-0.98.17-hadoop2-bin.tar.gz hbase-0.98.17-hadoop2.tar.gz
 ```
-* Build slider app packge for HBase. The files will be built under `target` directory.
+* Build slider app packge for HBase. Assume the hbase package downloaded in the previous step is located under `/vagrant` directory. The files will be built under `target` directory.
 ```
 git clone -b releases/slider-0.91.0-incubating https://github.com/apache/incubator-slider.git
 cd incubator-slider/app-packages/hbase
@@ -101,7 +101,7 @@ cd ../../
 ```
 * Deliver the following files:
 ```
-slider-hbase-app-package-0.98.17-hadoop2.zip
+target/slider-hbase-app-package-0.98.17-hadoop2.zip
 appConfig-default.json
 resources-default.json
 ```
@@ -121,10 +121,17 @@ slider package --install --name HBASE --package target/slider-hbase-app-package-
 * Change following configuration:
   * **`appConfig-default.json`**
    ```
+"java_home": "<full_path_to_your_java_home_or_delete_this_line_if_java_home_is_set_in_the_system_path>",
 "site.global.metric_collector_host": "<your_elasticsearch_server_host>",
 "site.global.metric_collector_port": "9200",
-"site.global.metric_collector_lib": "<full_path_to_hadoop-metrics-elasticsearch-sink-1.0.jar>",
+"site.global.metric_collector_lib": "file://<full_path_to_hadoop-metrics-elasticsearch-sink-1.0.jar>",
 ```
+  For example:
+ ```
+"site.global.metric_collector_host": "mdinglin02",
+"site.global.metric_collector_port": "9200",
+"site.global.metric_collector_lib": "file:///opt/hadoop/share/hadoop/yarn/lib/hadoop-metrics-elasticsearch-sink-1.0.jar",
+ ```
 * Create the application
 ```
 slider create hbase --template appConfig-default.json --resources resources-default.json
