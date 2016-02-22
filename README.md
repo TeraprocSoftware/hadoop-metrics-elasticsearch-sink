@@ -8,7 +8,7 @@ The plugin jar must be deployed on all Hadoop YARN Nodemanagers with the **SAME*
 ```
 git clone https://<username>@bitbucket.org/teraproc/hadoop-metrics-elasticsearch-sink.git
 cd hadoop-metrics-elasticsearch-sink
-./gradle clean build
+gradle clean build
 ```
 
 # Prepare Apache Slider application package for HBase #
