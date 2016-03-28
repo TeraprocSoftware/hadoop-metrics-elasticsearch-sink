@@ -15,17 +15,17 @@ gradle clean build
 To prepare the Slider application package for HBase that uses this plugin, follow these steps:
 * Download HBase binary package, and rename the file to **remove** the -bin suffix, as required by Slider. For example:
 ```
-wget https://archive.apache.org/dist/hbase/0.98.17/hbase-0.98.17-hadoop2-bin.tar.gz
-mv hbase-0.98.17-hadoop2-bin.tar.gz hbase-0.98.17-hadoop2.tar.gz
+wget https://archive.apache.org/dist/hbase/1.1.4/hbase-1.1.4-bin.tar.gz
+mv hbase-1.1.4.tar.gz hbase-1.1.4.tar.gz
 ```
 * Build slider app packge for HBase. Assume the hbase package downloaded in the previous step is located under `/vagrant` directory. The files will be built under `target` directory.
 ```
 git clone -b releases/slider-0.91.0-incubating https://github.com/apache/incubator-slider.git
 cd incubator-slider/app-packages/hbase
-mvn clean package -Phbase-app-package -Dhbase.version=0.98.17-hadoop2 -Dpkg.name=hbase-0.98.17-hadoop2.tar.gz -Dpkg.src=/vagrant -Dpkg.version=0.98.17-hadoop2
+mvn clean package -Phbase-app-package -Dhbase.version=1.1.4 -Dpkg.name=hbase-1.1.4.tar.gz -Dpkg.src=/vagrant -Dpkg.version=1.1.4
 ``` 
 * Change the following configuration files: 
-  * **`target/slider-hbase-app-package-0.98.17-hadoop2/package/templates/hadoop-metrics2-hbase.properties-GANGLIA-MASTER.j2`**
+  * **`target/slider-hbase-app-package-1.1.4/package/templates/hadoop-metrics2-hbase.properties-GANGLIA-MASTER.j2`**
    ```
 {% if has_metric_collector %}
 
@@ -53,7 +53,7 @@ hbase.sink.elasticsearch.containerId-prefix={{container_id}}
 {% else %}
 ```
 
-  * **`target/slider-hbase-app-package-0.98.17-hadoop2/package/templates/hadoop-metrics2-hbase.properties-GANGLIA-RS.j2`**
+  * **`target/slider-hbase-app-package-1.1.4/package/templates/hadoop-metrics2-hbase.properties-GANGLIA-RS.j2`**
    ```
 {% if has_metric_collector %}
 
@@ -80,7 +80,7 @@ hbase.sink.elasticsearch.containerId-prefix={{container_id}}
 
 {% else %}
 ```
-  * **`target/slider-hbase-app-package-0.98.17-hadoop2/package/scripts/params.py`**
+  * **`target/slider-hbase-app-package-1.1.4/package/scripts/params.py`**
    ```
 #configuration for HBASE_OPTS
 container_id = config['hostLevelParams']['container_id']
@@ -88,20 +88,20 @@ component_name = config['componentName']
   ```
 * Copy out the application specification and resource specification files. These files have the required variable names replaced.
 ```
-cp target/slider-hbase-app-package-0.98.17-hadoop2/appConfig-default.json .
-cp target/slider-hbase-app-package-0.98.17-hadoop2/resources-default.json .
+cp target/slider-hbase-app-package-1.1.4/appConfig-default.json .
+cp target/slider-hbase-app-package-1.1.4/resources-default.json .
 ```
 * Back up the original zip file, and zip the new application package
 ```
-mv target/slider-hbase-app-package-0.98.17-hadoop2.zip target/slider-hbase-app-package-0.98.17-hadoop2.zip.orig
-cd target/slider-hbase-app-package-0.98.17-hadoop2/
-zip -r slider-hbase-app-package-0.98.17-hadoop2.zip ./*
-mv slider-hbase-app-package-0.98.17-hadoop2.zip ../
+mv target/slider-hbase-app-package-1.1.4.zip target/slider-hbase-app-package-1.1.4.zip.orig
+cd target/slider-hbase-app-package-1.1.4/
+zip -r slider-hbase-app-package-1.1.4.zip ./*
+mv slider-hbase-app-package-1.1.4.zip ../
 cd ../../
 ```
 * Deliver the following files:
 ```
-target/slider-hbase-app-package-0.98.17-hadoop2.zip
+target/slider-hbase-app-package-1.1.4.zip
 appConfig-default.json
 resources-default.json
 ```
