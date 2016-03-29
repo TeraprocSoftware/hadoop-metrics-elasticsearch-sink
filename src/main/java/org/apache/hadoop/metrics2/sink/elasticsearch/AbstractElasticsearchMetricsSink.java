@@ -74,7 +74,7 @@ public abstract class AbstractElasticsearchMetricsSink implements MetricsSink {
             postMethod.setRequestEntity(requestEntity);
             int statusCode = httpClient.executeMethod(postMethod);
             if (statusCode != 200) {
-                LOG.info("Unable to POST metrics to collector, " + connectUrl);
+                LOG.error("Unable to POST metrics to collector=" + connectUrl + " with status code=" + statusCode);
             } else {
                 LOG.debug("Metrics posted to Collector " + connectUrl);
             }
