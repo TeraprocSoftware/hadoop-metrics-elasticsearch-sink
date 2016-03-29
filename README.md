@@ -2,11 +2,10 @@
 
 **`hadoop-metrics-elasticsearch-sink`** is an implementation of Hadoop Metrics2 plugin to push metrics to Elasticsearch (a distributed RESTful search engine).
 The sink is capable of collecting metrics of hadoop applications that support Hadoop Metrics2 (e.g. hbase, kafka, etc.).
-The plugin jar must be deployed on all Hadoop YARN Nodemanagers with the **SAME** path (e.g., `/opt/hadoop/share/hadoop/yarn/lib/hadoop-metrics-elasticsearch-sink-1.0.jar`).
 
 # Build hadoop-metrics-elasticsearch-sink.jar #
 ```
-git clone https://<username>@bitbucket.org/teraproc/hadoop-metrics-elasticsearch-sink.git
+git clone https://github.com/TeraprocSoftware/hadoop-metrics-elasticsearch-sink.git
 cd hadoop-metrics-elasticsearch-sink
 gradle clean build
 ```
@@ -16,8 +15,16 @@ To prepare the Slider application package for HBase that uses this plugin, follo
 * Download HBase binary package, and rename the file to **remove** the -bin suffix, as required by Slider. For example:
 ```
 wget https://archive.apache.org/dist/hbase/1.1.4/hbase-1.1.4-bin.tar.gz
-mv hbase-1.1.4.tar.gz hbase-1.1.4.tar.gz
+mv hbase-1.1.4-bin.tar.gz hbase-1.1.4.tar.gz
 ```
+
+* Unpack the package and put the hadoop-metrics-elasticsearch-sink.jar into the lib directory, and repack:
+```
+tar xvfz hbase-1.1.4.tar.gz
+cp hadoop-metrics-elasticsearch-sink-1.0.jar hbase-1.1.4/lib/
+tar cvzf hbase-1.1.4.tar.gz hbase-1.1.4
+```
+
 * Build slider app packge for HBase. Assume the hbase package downloaded in the previous step is located under `/vagrant` directory. The files will be built under `target` directory.
 ```
 git clone -b releases/slider-0.91.0-incubating https://github.com/apache/incubator-slider.git
@@ -86,10 +93,11 @@ hbase.sink.elasticsearch.containerId-prefix={{container_id}}
 container_id = config['hostLevelParams']['container_id']
 component_name = config['componentName']
   ```
-* Copy out the application specification and resource specification files. These files have the required variable names replaced.
+* Modify ```target/slider-hbase-app-package-1.1.4/appConfig-default.json```.
+
 ```
-cp target/slider-hbase-app-package-1.1.4/appConfig-default.json .
-cp target/slider-hbase-app-package-1.1.4/resources-default.json .
+"site.global.metric_collector_port": "9200",
+"site.global.metric_collector_lib": "file://${AGENT_WORK_ROOT}/app/install/hbase-1.1.4/lib/hadoop-metrics-elasticsearch-sink-1.0.jar"
 ```
 * Back up the original zip file, and zip the new application package
 ```
@@ -102,8 +110,8 @@ cd ../../
 * Deliver the following files:
 ```
 target/slider-hbase-app-package-1.1.4.zip
-appConfig-default.json
-resources-default.json
+target/slider-hbase-app-package-1.1.4/appConfig-default.json
+target/slider-hbase-app-package-1.1.4/resources-default.json
 ```
 # Install and start Elasticsearch
 You must start Elasticsearch server before deploying and start Slider HBase package. Do the following on the Elasticsearch server host:
@@ -123,14 +131,10 @@ slider package --install --name HBASE --package target/slider-hbase-app-package-
    ```
 "java_home": "<full_path_to_your_java_home_or_delete_this_line_if_java_home_is_set_in_the_system_path>",
 "site.global.metric_collector_host": "<your_elasticsearch_server_host>",
-"site.global.metric_collector_port": "9200",
-"site.global.metric_collector_lib": "file://<full_path_to_hadoop-metrics-elasticsearch-sink-1.0.jar>",
 ```
   For example:
  ```
 "site.global.metric_collector_host": "mdinglin02",
-"site.global.metric_collector_port": "9200",
-"site.global.metric_collector_lib": "file:///opt/hadoop/share/hadoop/yarn/lib/hadoop-metrics-elasticsearch-sink-1.0.jar",
  ```
 * Create the application
 ```
